@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Registration Page</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #FFD194 0%, #D1913C 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .registration-box {
+            background: #FFFFFF;
+            border-left: 5px solid #66A6FF;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+            width: 300px;
+            transition: transform 0.3s ease-in-out;
+        }
+
+        .registration-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 20px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .registration-box h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .registration-box input[type="text"],
+        .registration-box input[type="password"],
+        .registration-box input[type="email"] {
+            width: 100%;
+            margin-bottom: 16px;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .registration-box input[type="submit"] {
+            background: #66A6FF;
+            color: white;
+            cursor: pointer;
+            border: none;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 4px;
+            transition: background 0.3s ease-in-out;
+        }
+
+        .registration-box input[type="submit"]:hover {
+            background: #559EF4;
+        }
+    </style>
+</head>
+<body>
+    <div class="registration-box">
+        <h2>Registration</h2>
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Register">
+            <a href="{% url 'loginPage' %}">SIgn in</a>
+        </form>
+    </div>
+</body>
+</html>

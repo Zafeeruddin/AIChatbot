@@ -1,0 +1,119 @@
+{% comment %} <html>
+    <head>
+        <title>Login Page</title>
+    </head>
+    <body>
+        <form method="post">
+            {% csrf_token %}
+            {{form.as_p}}
+            <input type="submit">
+        </form>
+    </body>
+</html>  {% endcomment %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login Page</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #FFD194 0%, #D1913C 100%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+
+
+.login-box {
+    background: #FFFFFF; /* White color for contrast */
+    border-left: 5px solid #66A6FF; /* A cool blue accent on the side */
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2);
+    width: 300px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.login-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 20px 0 rgba(0, 0, 0, 0.2);
+}
+
+.login-box h2 {
+    color: #333;
+    text-align: center;
+    margin-bottom: 24px;
+}
+
+.login-box input[type="email"],
+.login-box input[type="password"] {
+    width: 100%;
+    margin-bottom: 16px;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.login-box input[type="submit"] {
+    background: #66A6FF; /* Matching cool blue for the button */
+    color: white;
+    cursor: pointer;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 4px;
+    transition: background 0.3s ease-in-out;
+}
+
+.login-box input[type="submit"]:hover {
+    background: #559EF4; /* A slightly darker blue for the hover effect */
+}
+
+
+    </style>
+</head>
+<body>
+    <div class="login-box">
+        <h2>Login</h2>
+        {% if messages %}
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Login">
+            <a href="{% url 'RegisterPage' %}">Create Account</a>
+        </form>
+    </div>
+</body>
+</html>
+<script>
+    document.addEventListener('mousemove', function(e) {
+        var body = document.querySelector('body');
+        var square = document.createElement('div');
+        square.className = 'hover-square';
+        body.appendChild(square);
+
+        // Adjust the position so the center of the square is at the mouse position
+        square.style.left = (e.clientX - 40) + 'px'; // Half the square's width
+        square.style.top = (e.clientY - 40) + 'px'; // Half the square's height
+
+        // Change the square's color back to transparent after a short delay
+        setTimeout(function() {
+            square.style.backgroundColor = 'transparent';
+        }, 100); // Start transition to transparent almost immediately
+
+        // Remove the square from the DOM after it fades out
+        setTimeout(function() {
+            square.remove();
+        }, 2100); // This should match the transition duration
+    });
+</script>

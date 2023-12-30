@@ -1,0 +1,182 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chatbot</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+    <style>
+        /* styles.css */
+
+body {
+    background-color: #f0f0f0;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+
+.chat-messages {
+    max-height: 300px;
+    overflow-y: scroll;
+    scrollbar-width: thin;
+    scrollbar-color: #5cb85c #f9f9f9;
+    border-radius: 50px;
+    padding: 10px;
+    background-color: #f9f9f9;
+}
+
+.chat-message {
+    background-color: #5cb85c;
+    color: #fff;
+    border-radius: 10px;
+    padding: 10px;
+    margin: 5px 0;
+}
+
+.user-message {
+    background-color: #007bff;
+}
+/* styles.css */
+
+/* ... (previous styles) */
+
+.chat-container {
+    width: 100%;
+    max-width: 600px; /* Maximum width for the chat container */
+    max-height: 400px; /* Increase the maximum height for the chat container */
+    margin: 0 auto;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+    overflow: hidden; /* Hide overflow for oval-shaped scrollbar */
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+    display: flex;
+    flex-direction: column; /* Stack chat messages vertically */
+    justify-content: flex-end; /* Align chat messages to the bottom */
+    overflow-y: scroll; /* Add a vertical scrollbar to the chat container */
+    scrollbar-width: thin; /* Set scrollbar width */
+    scrollbar-color: #5cb85c #f9f9f9; /* Set scrollbar colors */
+    border-radius: 50px; /* Make the scrollbar oval-shaped */
+}
+
+.chat-input-container {
+    display: flex;
+    align-items: center;
+    background-color: #fff;
+    padding: 10px;
+    border-radius: 0 0 20px 20px; /* Rounded bottom corners */
+    position: sticky; /* Make the chat input container sticky at the bottom */
+    bottom: 0;
+    z-index: 1; /* Ensure it's above the scrollbar */
+}
+
+.chat-input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    outline: none;
+}
+
+.send-button {
+    background-color: #5cb85c;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 12px 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    margin-left: 10px;
+}
+
+.send-icon {
+    margin-right: 5px;
+}
+
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-messages" id="chatMessages">
+          <!-- Existing chat messages -->
+        </div>
+        <form id="chat-form" method="post" action="{% url 'chat' %}">
+          {% csrf_token %}
+          <div class="chat-input-container">
+            <input type="text" name="content" class="chat-input" placeholder="Type your message here">
+            <button type="submit" class="send-button">
+              <span class="send-icon">➡️</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    
+      <script>
+        document.getElementById('chat-form').addEventListener('submit', function(event) {
+          event.preventDefault();
+    
+          var userInput = document.querySelector('.chat-input').value;
+          document.querySelector('.chat-messages').insertAdjacentHTML('beforeend', '<div class="chat-message user-message">' + userInput + '</div>');
+          document.querySelector('.chat-messages').scrollTo(0, document.querySelector('.chat-messages').scrollHeight);
+    
+          fetch(this.action, {
+            method: this.method,
+            headers: {
+              'Content-Type': 'application/x-www-form-urlencoded',
+              'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: new URLSearchParams(new FormData(this))
+          })
+          .then(function(response) {
+            return response.json();
+          })
+          .then(function(data) {
+            var botResponse = data.content; // Retrieve the bot's response from the JSON data
+            displayWordsWithGap(botResponse); // Display bot's response with a gap
+          })
+          .catch(function(error) {
+            console.error('Error:', error);
+          });
+    
+          document.querySelector('.chat-input').value = '';
+        });
+    
+        function displayWordsWithGap(message) {
+          const chatMessages = document.getElementById('chatMessages');
+          const botMessageContainer = document.createElement('div');
+          botMessageContainer.classList.add('chat-message', 'bot-message');
+    
+          const words = message.split(' ');
+          let counter = 0;
+    
+          const interval = setInterval(() => {
+            if (counter < words.length) {
+              botMessageContainer.textContent += words[counter] + ' ';
+              chatMessages.appendChild(botMessageContainer);
+              chatMessages.scrollTo(0, chatMessages.scrollHeight);
+              counter++;
+            } else {
+              clearInterval(interval);
+            }
+          }, 100);
+        }
+    
+        // Function to get CSRF token - Replace with your method to get CSRF token
+        function getCookie(name) {
+          var cookieValue = null;
+          if (document.cookie && document.cookie !== '') {
+            var cookies = document.cookie.split(';');
+            for (var i = 0; i < cookies.length; i++) {
+              var cookie = cookies[i].trim();
+              if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+              }
+            }
+          }
+          return cookieValue;
+        }
+      </script>
+</body>
+
+</html>

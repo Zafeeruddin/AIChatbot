@@ -1,0 +1,75 @@
+/* styles.css */
+
+body {
+    background-color: #f0f0f0; /* Background color for the page */
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.chat-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #ffffff; /* Background color for the chat container */
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 10px;
+    overflow-y: auto; /* Add a scrollbar for the chat container */
+    max-height: 80vh; /* Limit the chat container height with a viewport-relative unit */
+    position: fixed; /* Fix the chat container with respect to the page */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Center the chat container on the page */
+}
+
+.chat-message {
+    background-color: #f2f2f2; /* Background color for chat messages */
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+.user-message {
+    text-align: right;
+    background-color: #007bff; /* Background color for user's messages */
+    color: #fff; /* Text color for user's messages */
+}
+
+.bot-message {
+    text-align: left;
+    background-color: #5cb85c; /* Background color for bot's messages */
+    color: #fff; /* Text color for bot's messages */
+}
+
+.chat-input-container {
+    display: flex;
+    align-items: center;
+    background-color: #f9f9f9; /* Background color for the input container */
+    padding: 10px;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+
+.chat-input {
+    flex: 1;
+    padding: 10px;
+    border: none;
+    border-radius: 20px;
+    margin-right: 10px;
+    outline: none; /* Remove input outline on focus */
+}
+
+.send-button {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 20px;
+    padding: 10px 20px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+}
+
+.send-icon {
+    margin-right: 5px;
+}
