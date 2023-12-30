@@ -1,0 +1,105 @@
+RoadMap to Chatbot which could take voice as prompt and return voice as answer:
+
+1) Setting virtual environment
+2) Creating speech-to-text module
+  - Recognition of speech
+  - Converting speech to text
+  - Giving back text as voice
+3) Send to text to chat gpt
+4) Speak the response
+5) Run the loop
+
+Create a virtual environment in
+
+
+Desktop
+ Projects
+  AI Chatbot
+
+
+Run this command on command prompt to enter virtual environment:
+python -m venv ""C:\Users\dell\Desktop\Projects\AI Charbot""
+
+--> Activate environment by:
+
+C:\Users\dell\Desktop\Projects\AI Charbot>cd Scripts
+
+C:\Users\dell\Desktop\Projects\AI Charbot\Scripts>activate
+
+Now Prompt will change to '(AI Charbot)'
+(AI Charbot) C:\Users\dell\Desktop\Projects\AI Charbot\Scripts>
+
+
+Install Three libraries:
+
+(AI Charbot) C:\Users\dell\Desktop\Projects\AI Charbot\Speech-to-text>pip install PyAudio
+Collecting PyAudio
+  Using cached PyAudio-0.2.13-cp311-cp311-win_amd64.whl (164 kB)
+Installing collected packages: PyAudio
+Successfully installed PyAudio-0.2.13
+
+(AI Charbot) C:\Users\dell\Desktop\Projects\AI Charbot\Scripts>pip install pyttsx3
+
+(AI Charbot) C:\Users\dell\Desktop\Projects\AI Charbot\Scripts>pip install SpeechRecognition
+
+If they are successfully installed it will give following prompt:
+
+Successfully installed comtypes-1.2.0 pypiwin32-223 pyttsx3-2.90 pywin32-306
+
+Successfully installed SpeechRecognition-3.10.0 certifi-2023.7.22 charset-normalizer-3.3.0 idna-3.4 requests-2.31.0 urll
+
+
+Open a python file speech.py:
+
+import pytxxs3
+import speech_recognition as sr
+
+// here we are importing two libraries, pytxxs3 converts text-to-speech, whereas speech_recognition listens voice, and recognizes it using google audio.
+
+
+
+Creating a function which could take text as input and voice as output:
+
+def SpeakText(command):
+	engine = pyttsx3.init()
+	engine.say(command)
+	engine.runAndWait() 
+
+engine = pyttsx3.init(): This line initializes the pyttsx3 engine. It creates an instance of the text-to-speech engine, which you can use to convert text into speech.
+
+
+engine.say(command): This line uses the engine instance to convert the text provided in the command argument into speech. The say method takes the text as input and prepares it for speech synthesis.
+
+
+engine.runAndWait(): This line instructs the text-to-speech engine to play the synthesized speech. It ensures that the speech is spoken immediately and doesn't wait for other instructions in your program to complete.
+
+
+
+with sr.Microphone() as source2:
+
+
+    r.adjust_for_ambient_noise(source2,duration=0.2)
+    audio2=r.listen(source2)
+
+    MyText=r.recognize_google(audio2)
+    MyText=MyText.lower()
+
+    print("Did you say " + MyText)  #This will print the text 
+    SpeakText(MyText)               #The text recognized
+
+with sr.Microphone() as source2:: This line initializes a context manager for capturing audio from the microphone using the speech_recognition library. It creates an instance of the Microphone class and assigns it to the variable source2. The with statement ensures that the microphone is properly opened and closed, releasing system resources when you're done.
+
+
+r.adjust_for_ambient_noise(source2, duration=0.2): This line adjusts the microphone for ambient noise. It tells the speech_recognition library to listen for ambient noise for 0.2 seconds and adjust the microphone's sensitivity accordingly. This can help improve the accuracy of speech recognition by accounting for background noise.
+
+
+
+audio2 = r.listen(source2): This line captures audio from the microphone (using the source2 that you defined earlier) and stores it in the audio2 variable. This audio data can then be passed to a speech recognition service to convert it into text.
+
+MyText = r.recognize_google(audio2): This line uses Google's speech recognition service to convert the captured audio (stored in audio2) into text and assigns the recognized text to the variable MyText. The recognize_google method of the Recognizer class performs the recognition using Google's cloud-based speech recognition service.
+
+
+MyText = MyText.lower(): This line converts the recognized text stored in the MyText variable to lowercase. This is often done to standardize the text case and make it easier to work with, as it ensures that any subsequent comparisons or processing are not case-sensitive.
+
+
+
