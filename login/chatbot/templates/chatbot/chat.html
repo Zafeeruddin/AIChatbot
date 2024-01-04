@@ -26,7 +26,7 @@ body {
 }
 
 .chat-message {
-    background-color: #5cb85c;
+    background-color: #25d925;
     color: #fff;
     border-radius: 10px;
     padding: 10px;
@@ -96,22 +96,176 @@ body {
     </style>
 </head>
 <body>
-    <div class="chat-container">
-        <div class="chat-messages" id="chatMessages">
-          <!-- Existing chat messages -->
-        </div>
-        <form id="chat-form" method="post" action="{% url 'chat' %}">
-          {% csrf_token %}
-          <div class="chat-input-container">
-            <input type="text" name="content" class="chat-input" placeholder="Type your message here">
-            <button type="submit" class="send-button">
-              <span class="send-icon">➡️</span>
-            </button>
-          </div>
-        </form>
+  <div class="chat-container">
+    <div class="chat-messages" id="chatMessages">
+      <!-- Existing chat messages -->
+    </div>
+    <form id="chat-form" method="post" action="{% url 'chat' %}">
+      {% csrf_token %}
+      <div class="chat-input-container">
+        <input type="text" name="content" class="chat-input" id="userInput" placeholder="Type your message here">
+        <button type="submit" class="send-button">
+          <span class="send-icon">➡️</span>
+        </button>
+        <button type="button" id="voice-button">
+          <span class="send-icon">🎙️</span>
+        </button>
+
       </div>
+    </form>
+  </div>
+  
     
       <script>
+        function sendToBackend() {
+          var userInput = document.querySelector('.chat-input').value;
+      
+          fetch('process_text', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+                  'X-CSRFToken': getCookie('csrftoken')
+              },
+              body: JSON.stringify({ content: userInput })
+          })
+          .then(function(response) {
+              return response.json();
+          })
+          .then(function(data) {
+              var audioUrl = data.audioUrl; // Extract audio URL from server response
+              speakText(userInput); // Function to prompt text via voice
+      
+              // Display the response word by word in chat
+              var words = data.response.split(' ');
+              var delay = 1000; // Adjust delay time as needed
+      
+              words.forEach(function(word) {
+                  setTimeout(function() {
+                      document.querySelector('.chat-messages').insertAdjacentHTML('beforeend', '<div class="chat-message bot-message">' + word + '</div>');
+                  }, delay);
+                  delay += 1000; // Increase delay for next word
+              });
+      
+              // Optionally, if you have an audio URL, you can use it here
+              // playAudio(audioUrl);
+          })
+          .catch(function(error) {
+              console.error('Error:', error);
+          });
+      }
+      
+        function onSubmitHandler(event) {
+          var form = document.getElementById('chat-form');
+          var actionUrl = form.getAttribute('action');
+          if (form.getAttribute('data-action')) {
+            form.setAttribute('action', form.getAttribute('data-action'));
+          }
+          return true;
+        }
+        function promptVoice() {
+          var form = document.getElementById('chat-form');
+          form.setAttribute('data-action', '{% url 'process_text' %}');
+          const recognition = new webkitSpeechRecognition() || SpeechRecognition();
+          recognition.lang = 'en-US';
+      
+          recognition.onresult = function(event) {
+            const speechResult = event.results[0][0].transcript;
+            console.log('Speech Recognized:', speechResult);
+      
+            document.getElementById('userInput').value = speechResult; // Display voice prompt in the input field
+            appendToChat('user', speechResult); // Add user's voice input to the chat box
+      
+            fetch(form.getAttribute('data-action'), {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': '{{ csrf_token }}'
+              },
+              body: JSON.stringify({ content: speechResult })
+            })
+            .then(response => response.json())
+            .then(data => {
+              var botResponse = data.response;
+              appendToChat('bot', botResponse); // Add bot's response to the chat box
+            })
+            .catch(error => {
+              console.error('Error:', error);
+            });
+          };
+      
+          recognition.start();
+        }
+      
+        function appendToChat(sender, message) {
+          const chatMessages = document.getElementById('chatMessages');
+          const messageContainer = document.createElement('div');
+          messageContainer.classList.add('chat-message', sender + '-message');
+          messageContainer.textContent = message;
+      
+          chatMessages.appendChild(messageContainer);
+          chatMessages.scrollTo(0, chatMessages.scrollHeight);
+        }
+        
+        document.getElementById("voice-button").addEventListener("click", async function () {
+          try {
+            const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+            recognition.lang = 'en-US';
+          
+            recognition.onstart = function () {
+              console.log('Speech recognition started...');
+            };
+          
+            recognition.onresult = function (event) {
+              const speechResult = event.results[event.results.length - 1][0].transcript;
+              console.log('Speech Recognized:', speechResult);
+              
+              // Send recognized speech to the backend function
+              sendToBackend(speechResult);
+            };
+          
+            recognition.onerror = function (event) {
+              console.error('Speech recognition error:', event.error);
+            };
+          
+            // Start listening
+            recognition.start();
+            
+            // Stop listening after a pause in speech
+            recognition.onend = function () {
+              console.log('Speech recognition ended.');
+              recognition.stop();
+            };
+          }
+           catch (error) {
+              console.error('Error:', error);
+          }
+      });
+      async function sendToBackend(speechText){
+          
+      
+        const url = "/process_text/"; // Adjust the URL to your backend endpoint
+        const response = await fetch(url, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ speechText: speechText }),
+        });
+
+        const responseData = await response.json();
+
+        // Display the user message in the chat container
+        document.querySelector('.chat-messages').insertAdjacentHTML('beforeend', '<div class="chat-message user-message">' + responseData.prompt + '</div>');
+        // Display the bot response in the chat container
+        console.log("reached")
+        const botMessageContainer = document.createElement('div');
+        botMessageContainer.classList.add('chat-message', 'bot-message');
+        botMessageContainer.textContent = responseData.data;
+        document.getElementById('chatMessages').appendChild(botMessageContainer);
+        console.log("should add")
+      }
+      
+
         document.getElementById('chat-form').addEventListener('submit', function(event) {
           event.preventDefault();
     
@@ -160,7 +314,6 @@ body {
             }
           }, 100);
         }
-    
         // Function to get CSRF token - Replace with your method to get CSRF token
         function getCookie(name) {
           var cookieValue = null;
