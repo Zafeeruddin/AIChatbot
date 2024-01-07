@@ -253,6 +253,38 @@ body {
         });
 
         const responseData = await response.json();
+        const options =await {
+          method: 'POST',
+          headers: {
+            'xi-api-key': '8adc752bac062095fabfb8ba39ff7da8',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            "model_id": "eleven_multilingual_v2",
+            "text": responseData.data,
+            "voice_settings": {
+              "similarity_boost": 1,
+              "stability": 1,
+              "style": 1,
+              "use_speaker_boost": true
+            }
+          })
+        };
+        console.log("ready to take voice")
+
+        const voice=await fetch('https://api.elevenlabs.io/v1/text-to-speech/M8yHS9kJha5B58EgRBNL?optimize_streaming_latency=1&output_format=mp3_44100_96', options)
+          .then(response => response.blob()) // Get the response as a Blob
+          .then(blob => {
+            // Create a Blob URL to reference the audio
+            const audioURL = URL.createObjectURL(blob);
+
+            // Create an HTML audio element
+            const audio = new Audio(audioURL);
+            console.log("playing audio")
+            // Play the audio
+            audio.play();
+          })
+        .catch(err => console.error(err));
 
         // Display the user message in the chat container
         document.querySelector('.chat-messages').insertAdjacentHTML('beforeend', '<div class="chat-message user-message">' + responseData.prompt + '</div>');
