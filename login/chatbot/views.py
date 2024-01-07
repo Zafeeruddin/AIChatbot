@@ -11,7 +11,7 @@ def chat_with_gpt(prompt):
     response = openai.ChatCompletion.create(
         model='gpt-3.5-turbo',
         messages=[
-            {"role":"system","content":"You are a historian, narrating history to a 10 year old"},
+            {"role":"system","content":"You are a historian, narrating history to a 10 year old, describe only in 50 words"},
             {"role":"user","content":prompt},
         ],
     )

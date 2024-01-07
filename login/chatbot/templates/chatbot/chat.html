@@ -271,12 +271,12 @@ body {
           })
         };
         console.log("ready to take voice")
-
+        let audioURL;
         const voice=await fetch('https://api.elevenlabs.io/v1/text-to-speech/M8yHS9kJha5B58EgRBNL?optimize_streaming_latency=1&output_format=mp3_44100_96', options)
           .then(response => response.blob()) // Get the response as a Blob
           .then(blob => {
             // Create a Blob URL to reference the audio
-            const audioURL = URL.createObjectURL(blob);
+            audioURL = URL.createObjectURL(blob);
 
             // Create an HTML audio element
             const audio = new Audio(audioURL);
@@ -294,6 +294,11 @@ body {
         botMessageContainer.classList.add('chat-message', 'bot-message');
         botMessageContainer.textContent = responseData.data;
         document.getElementById('chatMessages').appendChild(botMessageContainer);
+        //defining audio code
+        const audioTag=document.createElement("audio")
+        audioTag.src=audioURL
+        audioTag.controls=true
+        botMessageContainer.appendChild(audioTag)
         console.log("should add")
       }
       
